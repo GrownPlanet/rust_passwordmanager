@@ -1,9 +1,11 @@
 use std::{
     env,
-    fs::File,
-    io::{self, prelude::*, BufReader},
+    fs::{self, File},
+    io::{self, prelude::*},
     path::Path,
 };
+
+use rand::prelude::*;
 
 fn main() {
     let args: Vec<String> = env::args().collect();
@@ -23,7 +25,7 @@ fn new_database(filename: &str) {
     }
     let mut file = File::create(filename).unwrap();
 
-    print!("Enter password: ");
+    print!("Create password: ");
     io::stdout().flush().unwrap();
     let password = rpassword::read_password().unwrap();
 
@@ -35,9 +37,13 @@ fn new_database(filename: &str) {
         panic!("Error: passwords don't match");
     }
 
-    let encrypted_password = sha256::digest(password);
+    let mut rng = rand::thread_rng();
+    let salt: i32 = rng.gen();
 
-    write!(file, "{}", encrypted_password).unwrap();
+    let encrypted_password = sha256::digest(format!["{}{}", salt, password]);
+
+    writeln!(file, "{}", encrypted_password).unwrap();
+    writeln!(file, "{}", salt).unwrap();
 
     println!("Succesfully created new database!");
 }
@@ -47,17 +53,18 @@ fn open_database(filename: &str) {
         panic!("Error: input is not a file")
     }
 
-    let file = File::open(filename).unwrap();
-    let mut reader = BufReader::new(file);
-    let mut first_line = String::new();
-    reader.read_line(&mut first_line).unwrap();
+    let file = fs::read_to_string(filename).unwrap();
+    let mut lines = file.lines();
+    let pass = lines.next().unwrap();
+    let salt = lines.next().unwrap();
 
     print!("Enter password: ");
     io::stdout().flush().unwrap();
-    let password = rpassword::read_password().unwrap();
-    let encrypted_password = sha256::digest(password);
 
-    if encrypted_password == first_line {
+    let input_password = rpassword::read_password().unwrap();
+    let input_encrypted_password = sha256::digest(format!["{}{}", salt, input_password]);
+
+    if input_encrypted_password == pass {
         println!("correct password");
     } else {
         println!("incorrect password");
