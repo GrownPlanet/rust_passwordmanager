@@ -55,6 +55,11 @@ fn open_database(filename: &str) {
 
     let file = fs::read_to_string(filename).unwrap();
     let mut lines = file.lines();
+
+    if lines.clone().count() < 2 {
+        panic!("File is too short, no salt/ password stored");
+    }
+
     let pass = lines.next().unwrap();
     let salt = lines.next().unwrap();
 
