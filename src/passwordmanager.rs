@@ -7,7 +7,7 @@ use std::{
 
 use rand::prelude::*;
 
-use dialoguer::{Confirm, Password};
+use dialoguer::{Confirm, Input, Password};
 
 pub fn run() {
     let args: Vec<String> = env::args().collect();
@@ -15,18 +15,28 @@ pub fn run() {
     let command = &args[1];
 
     match command.as_str() {
-        "new" => {
+        "new" | "n" => {
             if args.len() > 2 {
                 new_database(&args[2]);
             } else {
-                println!("Error: no database suplied");
+                let filename: String = Input::new()
+                    .with_prompt("name new database")
+                    .interact_text()
+                    .unwrap();
+
+                new_database(&filename);
             }
         }
-        "open" => {
+        "open" | "o" => {
             if args.len() > 2 {
                 open_database(&args[2])
             } else {
-                println!("Error: no database suplied");
+                let filename: String = Input::new()
+                    .with_prompt("file to open")
+                    .interact_text()
+                    .unwrap();
+
+                open_database(&filename);
             }
         }
         _ => println!("Error: argument not found"),
@@ -107,5 +117,3 @@ fn ask_to_create(filename: &str) -> bool {
 
     false
 }
-
-// fn ask_to_create()
