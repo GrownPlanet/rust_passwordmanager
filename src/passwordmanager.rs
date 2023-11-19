@@ -29,14 +29,16 @@ pub fn run() {
                 println!("Error: no database suplied");
             }
         }
-        _ => panic!("Error: argument not found"),
+        _ => println!("Error: argument not found"),
     }
 }
 
 fn new_database(filename: &str) {
     if Path::new(filename).is_file() {
-        panic!("Error: file already exists");
+        println!("Error: file already exists");
+        return;
     }
+
     let mut file = File::create(filename).unwrap();
 
     let password = Password::new()
@@ -60,7 +62,8 @@ fn open_database(filename: &str) {
     if !Path::new(filename).is_file() {
         println!("Error: database does not exist");
         if !ask_to_create(filename) {
-            panic!("No database");
+            println!("No database");
+            return;
         }
     }
 
@@ -68,7 +71,8 @@ fn open_database(filename: &str) {
     let mut lines = file.lines();
 
     if lines.clone().count() < 2 {
-        panic!("File is too short, no salt/ password stored");
+        println!("File is too short, no salt/ password stored");
+        return;
     }
 
     let encrypted_password = lines.next().unwrap();
@@ -103,3 +107,5 @@ fn ask_to_create(filename: &str) -> bool {
 
     false
 }
+
+// fn ask_to_create()
