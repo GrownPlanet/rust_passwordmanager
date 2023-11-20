@@ -62,7 +62,7 @@ fn new_database(filename: &str) {
 
     let hashed_password = sha256::digest(format!["{}{}", salt, password]);
 
-    writeln!(file, "{}", hashed).unwrap();
+    writeln!(file, "{}", hashed_password).unwrap();
     writeln!(file, "{}", salt).unwrap();
 
     println!("Succesfully created new database!");
