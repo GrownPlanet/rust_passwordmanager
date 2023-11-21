@@ -12,6 +12,11 @@ use dialoguer::{Confirm, Input, Password};
 pub fn run() {
     let args: Vec<String> = env::args().collect();
 
+    if args.len() <= 1 {
+        help_pls();
+        return;
+    }
+
     let command = &args[1];
 
     match command.as_str() {
@@ -39,7 +44,8 @@ pub fn run() {
                 open_database(&filename);
             }
         }
-        _ => println!("Error: argument not found"),
+        "help" => help_pls(),
+        _ => help_pls(),
     }
 }
 
@@ -116,4 +122,15 @@ fn ask_to_create(filename: &str) -> bool {
     }
 
     false
+}
+
+fn help_pls() {
+    println!(
+        "
+    help:
+    use `new` or `n` to create a new database
+    use `open` or `o` to open a database
+    use `help` to show this menu
+    "
+    );
 }
