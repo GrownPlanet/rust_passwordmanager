@@ -105,9 +105,9 @@ fn open_database(filename: &str) {
     let input_hashed_password = sha256::digest(format!["{}{}", salt, input_password]);
 
     if input_hashed_password == hashed_password {
-        println!("correct password");
+        println!("password correct");
     } else {
-        println!("incorrect password");
+        println!("password incorrect");
     }
 }
 
